@@ -4,19 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.android.animation.MainActivity">
+    tools:context="com.android.animation.PropertyAnimationActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_margin="20dp"
             android:text="属性动画"
             android:textColor="#000000"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/personBt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="开启Person属性动画"
+            android:onClick="onClick"
+            android:textAllCaps="false"
             android:textSize="20sp" />
     </RelativeLayout>
 
