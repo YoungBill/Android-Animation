@@ -16,4 +16,11 @@ public class FrameAnimationActivity extends AppCompatActivity {
         AnimationDrawable drawable = (AnimationDrawable) image.getBackground();
         drawable.start();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransition(R.anim.screen_zoom_in, R.anim.screen_zoom_out);
+    }
 }

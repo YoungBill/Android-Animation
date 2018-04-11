@@ -6,9 +6,9 @@
         android:duration="2000"
         android:fillAfter="true"
         android:fromXDelta="0"
-        android:fromYDelta="0"
+        android:fromYDelta="0%p"
         android:repeatCount="infinite"
         android:repeatMode="reverse"
         android:toXDelta="0"
-        android:toYDelta="200" />
+        android:toYDelta="30%p" />
 </set>
