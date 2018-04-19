@@ -4,10 +4,13 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class PropertyAnimationActivity extends AppCompatActivity {
 
@@ -17,6 +20,7 @@ public class PropertyAnimationActivity extends AppCompatActivity {
     private Button mPersonBt;
     private Button mArgbBt;
     private Button mEvaluatorBt;
+    private ImageView mImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,9 @@ public class PropertyAnimationActivity extends AppCompatActivity {
         mPersonBt = findViewById(R.id.personBt);
         mArgbBt = findViewById(R.id.argbBt);
         mEvaluatorBt = findViewById(R.id.evaluatorBt);
+        mImage = findViewById(R.id.image);
+
+        setScaleAnimation();
     }
 
     public void onClick(View view) {
@@ -74,4 +81,48 @@ public class PropertyAnimationActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    private class MyScaleAnimatorListener implements ValueAnimator.AnimatorUpdateListener {
+
+        private Matrix mPrimaryMatrix;
+
+        public MyScaleAnimatorListener(Matrix matrix) {
+
+            mPrimaryMatrix = matrix;
+
+        }
+
+        @Override
+
+        public void onAnimationUpdate(ValueAnimator animation) {
+
+            float scale = (Float) animation.getAnimatedValue();
+
+            Matrix matrix = new Matrix(mPrimaryMatrix);
+
+            matrix.postScale(scale, scale, 1080 / 2, 1920 / 2);
+
+            mImage.setImageMatrix(matrix);
+
+        }
+
+    }
+
+    public void setScaleAnimation() {
+
+        ValueAnimator animator = ValueAnimator.ofFloat(1.5f, 1.0f);
+
+        animator.addUpdateListener(new MyScaleAnimatorListener(mImage.getImageMatrix()));
+
+        animator.setDuration(1000);
+
+        animator.setInterpolator(new DecelerateInterpolator());
+
+        animator.setStartDelay(500);
+
+        animator.start();
+
+    }
+
+
 }

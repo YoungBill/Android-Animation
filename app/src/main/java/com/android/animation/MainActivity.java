@@ -25,6 +25,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, PropertyAnimationActivity.class));
                 break;
         }
-        overridePendingTransition(R.anim.screen_zoom_in, R.anim.screen_zoom_out);
+//        overridePendingTransition(R.anim.screen_zoom_in, R.anim.screen_zoom_out);
     }
 }
