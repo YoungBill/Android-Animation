@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,7 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
+import com.squareup.picasso.Target;
 
 public class PropertyAnimationActivity extends AppCompatActivity {
 
@@ -34,7 +35,7 @@ public class PropertyAnimationActivity extends AppCompatActivity {
     private int mTargetImageHeight;
     private int mScreenWidth;
     private int mScreenHeight;
-    private Transformation mTransformation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +50,15 @@ public class PropertyAnimationActivity extends AppCompatActivity {
         mImage = findViewById(R.id.image);
         mScreenWidth = Utils.getScreenWidth(PropertyAnimationActivity.this);
         mScreenHeight = Utils.getScreenHeight(PropertyAnimationActivity.this);
-        mTransformation = new Transformation() {
-
+        Target target = new Target() {
             @Override
-            public Bitmap transform(Bitmap source) {
-                mTargetImageWidth = source.getWidth();
-                mTargetImageHeight = source.getHeight();
-                Log.d(TAG, "targetWidth=" + mTargetImageWidth + ",source.targetHeight=" + mTargetImageHeight);
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                //加载成功后会得到一个bitmap,可以自定义操作
+                mImage.setImageBitmap(bitmap);
 
+                mTargetImageWidth = bitmap.getWidth();
+                mTargetImageHeight = bitmap.getHeight();
+                Log.d(TAG, "targetWidth=" + mTargetImageWidth + ",source.targetHeight=" + mTargetImageHeight);
                 Matrix matrix = mImage.getImageMatrix();
                 RectF drawableRect = new RectF(0, 0, mTargetImageWidth, mTargetImageHeight);
                 RectF viewRect = new RectF(0, 0, mScreenWidth * SCALE_INITIAL, mScreenHeight * SCALE_INITIAL);
@@ -64,19 +66,24 @@ public class PropertyAnimationActivity extends AppCompatActivity {
                 mImage.setImageMatrix(matrix);
 
                 setScaleAnimation();
-                return source;
             }
 
             @Override
-            public String key() {
-                return "transformation" + " desiredWidth";
+            public void onBitmapFailed(Drawable errorDrawable) {
+                // 加载失败进行相应处理
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
             }
         };
-//        Picasso.with(PropertyAnimationActivity.this)
-//                .load(IMAGE_URL)
-//                .transform(mTransformation)
-//                .into(mImage);
-        setScaleAnimation();
+        mImage.setTag(target);
+        Picasso.with(PropertyAnimationActivity.this)
+                .load(IMAGE_URL)
+                .placeholder(R.drawable.bg_homepage)
+                .into(target);
+//        setScaleAnimation();
     }
 
     public void onClick(View view) {
@@ -134,19 +141,19 @@ public class PropertyAnimationActivity extends AppCompatActivity {
 
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
-//            float scale = (Float) animation.getAnimatedValue();
-//            Matrix matrix = new Matrix(mPrimaryMatrix);
-//            RectF drawableRect = new RectF(0, 0, mTargetImageWidth, mTargetImageHeight);
-//            RectF viewRect = new RectF(0, 0, mScreenWidth * scale, mScreenHeight * scale);
-//            matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.START);
-//            mImage.setImageMatrix(matrix);
-
             float scale = (Float) animation.getAnimatedValue();
             Matrix matrix = new Matrix(mPrimaryMatrix);
-            RectF drawableRect = new RectF(0, 0, 1080, 1920);
-            RectF viewRect = new RectF(0, 0, 720 * scale, 1280 * scale);
-            matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
+            RectF drawableRect = new RectF(0, 0, mTargetImageWidth, mTargetImageHeight);
+            RectF viewRect = new RectF(0, 0, mScreenWidth * scale, mScreenHeight * scale);
+            matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.START);
             mImage.setImageMatrix(matrix);
+
+//            float scale = (Float) animation.getAnimatedValue();
+//            Matrix matrix = new Matrix(mPrimaryMatrix);
+//            RectF drawableRect = new RectF(0, 0, 1080, 1920);
+//            RectF viewRect = new RectF(0, 0, 720 * scale, 1280 * scale);
+//            matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
+//            mImage.setImageMatrix(matrix);
         }
     }
 
