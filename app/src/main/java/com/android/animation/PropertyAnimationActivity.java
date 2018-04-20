@@ -3,24 +3,38 @@ package com.android.animation;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
+
 public class PropertyAnimationActivity extends AppCompatActivity {
 
     private static final String TAG = PropertyAnimationActivity.class.getSimpleName();
+    private static final String IMAGE_URL = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1524202080430&di=c595a9d9789e4fbc7d95934a9f699dd6&imgtype=0&src=http%3A%2F%2Fattachments.gfan.com%2Fforum%2Fattachments2%2F201408%2F14%2F141434jnfneinjeneqhj9t.jpg";
+    private static final float SCALE_INITIAL = 1.3f;
 
     private Person mPerson;
     private Button mPersonBt;
     private Button mArgbBt;
     private Button mEvaluatorBt;
     private ImageView mImage;
+
+    private int mTargetImageWidth;
+    private int mTargetImageHeight;
+    private int mScreenWidth;
+    private int mScreenHeight;
+    private Transformation mTransformation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +47,35 @@ public class PropertyAnimationActivity extends AppCompatActivity {
         mArgbBt = findViewById(R.id.argbBt);
         mEvaluatorBt = findViewById(R.id.evaluatorBt);
         mImage = findViewById(R.id.image);
+        mScreenWidth = Utils.getScreenWidth(PropertyAnimationActivity.this);
+        mScreenHeight = Utils.getScreenHeight(PropertyAnimationActivity.this);
+        mTransformation = new Transformation() {
 
+            @Override
+            public Bitmap transform(Bitmap source) {
+                mTargetImageWidth = source.getWidth();
+                mTargetImageHeight = source.getHeight();
+                Log.d(TAG, "targetWidth=" + mTargetImageWidth + ",source.targetHeight=" + mTargetImageHeight);
+
+                Matrix matrix = mImage.getImageMatrix();
+                RectF drawableRect = new RectF(0, 0, mTargetImageWidth, mTargetImageHeight);
+                RectF viewRect = new RectF(0, 0, mScreenWidth * SCALE_INITIAL, mScreenHeight * SCALE_INITIAL);
+                matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
+                mImage.setImageMatrix(matrix);
+
+                setScaleAnimation();
+                return source;
+            }
+
+            @Override
+            public String key() {
+                return "transformation" + " desiredWidth";
+            }
+        };
+//        Picasso.with(PropertyAnimationActivity.this)
+//                .load(IMAGE_URL)
+//                .transform(mTransformation)
+//                .into(mImage);
         setScaleAnimation();
     }
 
@@ -87,42 +129,34 @@ public class PropertyAnimationActivity extends AppCompatActivity {
         private Matrix mPrimaryMatrix;
 
         public MyScaleAnimatorListener(Matrix matrix) {
-
             mPrimaryMatrix = matrix;
-
         }
 
         @Override
-
         public void onAnimationUpdate(ValueAnimator animation) {
+//            float scale = (Float) animation.getAnimatedValue();
+//            Matrix matrix = new Matrix(mPrimaryMatrix);
+//            RectF drawableRect = new RectF(0, 0, mTargetImageWidth, mTargetImageHeight);
+//            RectF viewRect = new RectF(0, 0, mScreenWidth * scale, mScreenHeight * scale);
+//            matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.START);
+//            mImage.setImageMatrix(matrix);
 
             float scale = (Float) animation.getAnimatedValue();
-
             Matrix matrix = new Matrix(mPrimaryMatrix);
-
-            matrix.postScale(scale, scale, 1080 / 2, 1920 / 2);
-
+            RectF drawableRect = new RectF(0, 0, 1080, 1920);
+            RectF viewRect = new RectF(0, 0, 720 * scale, 1280 * scale);
+            matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
             mImage.setImageMatrix(matrix);
-
         }
-
     }
 
     public void setScaleAnimation() {
-
-        ValueAnimator animator = ValueAnimator.ofFloat(1.5f, 1.0f);
-
+        ValueAnimator animator = ValueAnimator.ofFloat(SCALE_INITIAL, 1.0f);
         animator.addUpdateListener(new MyScaleAnimatorListener(mImage.getImageMatrix()));
-
         animator.setDuration(1000);
-
         animator.setInterpolator(new DecelerateInterpolator());
-
         animator.setStartDelay(500);
-
         animator.start();
-
     }
-
 
 }

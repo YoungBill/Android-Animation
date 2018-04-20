@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.android.animation.PropertyAnimationActivity">
+    tools:context="com.android.animation.PropertyAnimationActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_margin="-100dp"
         android:layout_height="match_parent">
 
         <TextView
@@ -57,7 +57,7 @@
             android:textAllCaps="false"
             android:textSize="20sp" />
 
-        <ImageView
+        <com.android.animation.MatrixImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
