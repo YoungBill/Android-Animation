@@ -36,7 +36,6 @@ public class PropertyAnimationActivity extends AppCompatActivity {
     private int mScreenWidth;
     private int mScreenHeight;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +64,8 @@ public class PropertyAnimationActivity extends AppCompatActivity {
                 matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
                 mImage.setImageMatrix(matrix);
 
-                setScaleAnimation();
+//                setScaleMatrixAnimation();
+                setScaleWHAnimation();
             }
 
             @Override
@@ -83,7 +83,14 @@ public class PropertyAnimationActivity extends AppCompatActivity {
                 .load(IMAGE_URL)
                 .placeholder(R.drawable.bg_homepage)
                 .into(target);
-//        setScaleAnimation();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+
+        }
     }
 
     public void onClick(View view) {
@@ -131,11 +138,29 @@ public class PropertyAnimationActivity extends AppCompatActivity {
         }
     }
 
-    private class MyScaleAnimatorListener implements ValueAnimator.AnimatorUpdateListener {
+    public void setScaleMatrixAnimation() {
+        ValueAnimator animator = ValueAnimator.ofFloat(SCALE_INITIAL, 1.0f);
+        animator.addUpdateListener(new MyScaleMatrixAnimatorListener(mImage.getImageMatrix()));
+        animator.setDuration(1000);
+        animator.setInterpolator(new DecelerateInterpolator());
+        animator.setStartDelay(500);
+        animator.start();
+    }
+
+    public void setScaleWHAnimation() {
+        ValueAnimator animator = ValueAnimator.ofFloat(SCALE_INITIAL, 1.0f);
+        animator.addUpdateListener(new MyScaleLayoutAnimatorListener((ScaleImageView) mImage));
+        animator.setDuration(1000);
+        animator.setInterpolator(new DecelerateInterpolator());
+        animator.setStartDelay(500);
+        animator.start();
+    }
+
+    private class MyScaleMatrixAnimatorListener implements ValueAnimator.AnimatorUpdateListener {
 
         private Matrix mPrimaryMatrix;
 
-        public MyScaleAnimatorListener(Matrix matrix) {
+        public MyScaleMatrixAnimatorListener(Matrix matrix) {
             mPrimaryMatrix = matrix;
         }
 
@@ -147,23 +172,22 @@ public class PropertyAnimationActivity extends AppCompatActivity {
             RectF viewRect = new RectF(0, 0, mScreenWidth * scale, mScreenHeight * scale);
             matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.START);
             mImage.setImageMatrix(matrix);
-
-//            float scale = (Float) animation.getAnimatedValue();
-//            Matrix matrix = new Matrix(mPrimaryMatrix);
-//            RectF drawableRect = new RectF(0, 0, 1080, 1920);
-//            RectF viewRect = new RectF(0, 0, 720 * scale, 1280 * scale);
-//            matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
-//            mImage.setImageMatrix(matrix);
         }
     }
 
-    public void setScaleAnimation() {
-        ValueAnimator animator = ValueAnimator.ofFloat(SCALE_INITIAL, 1.0f);
-        animator.addUpdateListener(new MyScaleAnimatorListener(mImage.getImageMatrix()));
-        animator.setDuration(1000);
-        animator.setInterpolator(new DecelerateInterpolator());
-        animator.setStartDelay(500);
-        animator.start();
-    }
+    private class MyScaleLayoutAnimatorListener implements ValueAnimator.AnimatorUpdateListener {
 
+        private ScaleImageView mImageView;
+
+        public MyScaleLayoutAnimatorListener(ScaleImageView imageView) {
+            mImageView = imageView;
+        }
+
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            float scale = (Float) animation.getAnimatedValue();
+            mImageView.setLayout((int) (mScreenWidth * scale), (int) (mScreenHeight * scale));
+            mImageView.requestLayout();
+        }
+    }
 }

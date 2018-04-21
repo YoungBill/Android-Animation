@@ -57,11 +57,12 @@
             android:textAllCaps="false"
             android:textSize="20sp" />
 
-        <ImageView
+        <com.android.animation.ScaleImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="matrix" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/demo" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
