@@ -5,13 +5,11 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,8 +29,6 @@ public class PropertyAnimationActivity extends AppCompatActivity {
     private Button mEvaluatorBt;
     private ImageView mImage;
 
-    private int mTargetImageWidth;
-    private int mTargetImageHeight;
     private int mScreenWidth;
     private int mScreenHeight;
 
@@ -54,17 +50,6 @@ public class PropertyAnimationActivity extends AppCompatActivity {
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 //加载成功后会得到一个bitmap,可以自定义操作
                 mImage.setImageBitmap(bitmap);
-
-                mTargetImageWidth = bitmap.getWidth();
-                mTargetImageHeight = bitmap.getHeight();
-                Log.d(TAG, "targetWidth=" + mTargetImageWidth + ",source.targetHeight=" + mTargetImageHeight);
-                Matrix matrix = mImage.getImageMatrix();
-                RectF drawableRect = new RectF(0, 0, mTargetImageWidth, mTargetImageHeight);
-                RectF viewRect = new RectF(0, 0, mScreenWidth * SCALE_INITIAL, mScreenHeight * SCALE_INITIAL);
-                matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
-                mImage.setImageMatrix(matrix);
-
-//                setScaleMatrixAnimation();
                 setScaleWHAnimation();
             }
 
@@ -83,14 +68,6 @@ public class PropertyAnimationActivity extends AppCompatActivity {
                 .load(IMAGE_URL)
                 .placeholder(R.drawable.bg_homepage)
                 .into(target);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-
-        }
     }
 
     public void onClick(View view) {
@@ -138,15 +115,6 @@ public class PropertyAnimationActivity extends AppCompatActivity {
         }
     }
 
-    public void setScaleMatrixAnimation() {
-        ValueAnimator animator = ValueAnimator.ofFloat(SCALE_INITIAL, 1.0f);
-        animator.addUpdateListener(new MyScaleMatrixAnimatorListener(mImage.getImageMatrix()));
-        animator.setDuration(1000);
-        animator.setInterpolator(new DecelerateInterpolator());
-        animator.setStartDelay(500);
-        animator.start();
-    }
-
     public void setScaleWHAnimation() {
         ValueAnimator animator = ValueAnimator.ofFloat(SCALE_INITIAL, 1.0f);
         animator.addUpdateListener(new MyScaleLayoutAnimatorListener((ScaleImageView) mImage));
@@ -154,25 +122,6 @@ public class PropertyAnimationActivity extends AppCompatActivity {
         animator.setInterpolator(new DecelerateInterpolator());
         animator.setStartDelay(500);
         animator.start();
-    }
-
-    private class MyScaleMatrixAnimatorListener implements ValueAnimator.AnimatorUpdateListener {
-
-        private Matrix mPrimaryMatrix;
-
-        public MyScaleMatrixAnimatorListener(Matrix matrix) {
-            mPrimaryMatrix = matrix;
-        }
-
-        @Override
-        public void onAnimationUpdate(ValueAnimator animation) {
-            float scale = (Float) animation.getAnimatedValue();
-            Matrix matrix = new Matrix(mPrimaryMatrix);
-            RectF drawableRect = new RectF(0, 0, mTargetImageWidth, mTargetImageHeight);
-            RectF viewRect = new RectF(0, 0, mScreenWidth * scale, mScreenHeight * scale);
-            matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.START);
-            mImage.setImageMatrix(matrix);
-        }
     }
 
     private class MyScaleLayoutAnimatorListener implements ValueAnimator.AnimatorUpdateListener {
