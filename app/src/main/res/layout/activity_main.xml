@@ -39,6 +39,16 @@
             android:layout_marginTop="20dp"
             android:onClick="Onclick"
             android:text="属性动画" />
+
+        <Button
+            android:id="@+id/layoutTransitionBt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/propertyAnimationBt"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:onClick="Onclick"
+            android:text="布局容器动画" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

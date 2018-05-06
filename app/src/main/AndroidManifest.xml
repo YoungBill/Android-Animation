@@ -21,6 +21,7 @@
         <activity android:name=".PropertyAnimationActivity" />
         <activity android:name=".TweenAnimationActivity" />
         <activity android:name=".FrameAnimationActivity" />
+        <activity android:name=".LayoutTransitionActivity" />
     </application>
 
 </manifest>
